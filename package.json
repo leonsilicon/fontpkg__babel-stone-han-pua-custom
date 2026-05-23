@@ -1,0 +1,23 @@
+{
+  "name": "@leonsilicon/fontpkg__babel-stone-han-pua-custom",
+  "version": "0.0.0",
+  "description": "Font package for BabelStone Han PUA Custom",
+  "keywords": [
+    "font",
+    "fonts",
+    "babel-stone-han-pua-custom",
+    "BabelStone Han PUA Custom"
+  ],
+  "files": [
+    "BabelStoneHanPUACustom.ttf"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/leonsilicon/fontpkg__babel-stone-han-pua-custom"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
+
