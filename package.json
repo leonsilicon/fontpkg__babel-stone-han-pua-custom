@@ -1,7 +1,8 @@
 {
   "name": "@leonsilicon/fontpkg__babel-stone-han-pua-custom",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Font package for BabelStone Han PUA Custom",
+  "license": "Arphic-1999",
   "keywords": [
     "font",
     "fonts",
@@ -20,4 +21,3 @@
     "registry": "https://registry.npmjs.org/"
   }
 }
-

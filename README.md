@@ -6,7 +6,8 @@
 |----------|-------|
 | Package Name | `@leonsilicon/fontpkg__babel-stone-han-pua-custom` |
 | Display Name | BabelStone Han PUA Custom |
-| Version | 0.0.0 |
+| Version | 0.0.1 |
+| License | Arphic Public License |
 | Total Size | 48.54 MB |
 | File Count | 1 |
 
@@ -15,6 +16,29 @@
 | File | Format | Size | Style |
 |------|--------|------|-------|
 | BabelStoneHanPUACustom.ttf | TTF | 6.3 MB | - |
+
+## Custom glyphs
+
+| Code point | Glyph name | JavaScript/Python escape | Contents |
+|------------|------------|--------------------------|----------|
+| U+F8DF | `uniF8DF` | `\uF8DF` | Existing custom glyph |
+| U+F8E0 | `walkPrefix` | `\uF8E0` | Strokes 1 and 2 of 辶 (dot + middle stroke) |
+
+U+F8E0 is a Private Use Area character. It must be displayed with this font;
+another font may show tofu or an unrelated glyph.
+
+The walk-prefix outline uses paths 1 and 2 from the Simplified Chinese
+[AnimCJK U+8FB6 source](https://github.com/parsimonhi/animCJK/blob/master/svgsZhHans/36790.svg),
+which is derived from the Arphic PL KaitiM fonts. The retained source SVG is at
+`sources/walk_radical_dot_plus_hzzp_exact.svg`.
+
+To rebuild and verify the font:
+
+```sh
+python -m pip install fonttools
+python scripts/add_walk_prefix_glyph.py
+python scripts/verify_font.py
+```
 
 ## 🏷️ Font Names
 
@@ -63,5 +87,3 @@
 ### licenseURL
 
 - **en**: http://ftp.gnu.org/non-gnu/chinese-fonts-truetype/LICENSE
-
-
