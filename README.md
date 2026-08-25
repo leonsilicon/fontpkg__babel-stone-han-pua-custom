@@ -19,8 +19,8 @@
 
 ## Custom glyphs
 
-| Code point | Glyph name | JavaScript/Python escape | Contents |
-|------------|------------|--------------------------|----------|
+| Code point | Glyph name | JavaScript escape | Contents |
+|------------|------------|-------------------|----------|
 | U+F8DF | `uniF8DF` | `\uF8DF` | Existing custom glyph |
 | U+F8E0 | `walkPrefix` | `\uF8E0` | Strokes 1 and 2 of 辶 (dot + middle stroke) |
 
@@ -29,15 +29,15 @@ another font may show tofu or an unrelated glyph.
 
 The walk-prefix outline uses paths 1 and 2 from the Simplified Chinese
 [AnimCJK U+8FB6 source](https://github.com/parsimonhi/animCJK/blob/master/svgsZhHans/36790.svg),
-which is derived from the Arphic PL KaitiM fonts. The retained source SVG is at
-`sources/walk_radical_dot_plus_hzzp_exact.svg`.
+which is derived from the Arphic PL KaitiM fonts. The retained source SVG and
+exact TrueType contour data are in `data/`.
 
 To rebuild and verify the font:
 
 ```sh
-python -m pip install fonttools
-python scripts/add_walk_prefix_glyph.py
-python scripts/verify_font.py
+bun install
+./_build.ts
+# or: bun run build
 ```
 
 ## 🏷️ Font Names

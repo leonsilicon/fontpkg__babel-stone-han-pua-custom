@@ -12,6 +12,9 @@
   "files": [
     "BabelStoneHanPUACustom.ttf"
   ],
+  "scripts": {
+    "build": "./_build.ts"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/leonsilicon/fontpkg__babel-stone-han-pua-custom"
@@ -19,5 +22,8 @@
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "fonteditor-core": "2.6.3"
   }
 }
