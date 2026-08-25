@@ -6,7 +6,7 @@
 |----------|-------|
 | Package Name | `@leonsilicon/fontpkg__babel-stone-han-pua-custom` |
 | Display Name | BabelStone Han PUA Custom |
-| Version | 0.0.1 |
+| Version | 0.0.2 |
 | License | Arphic Public License |
 | Total Size | 48.54 MB |
 | File Count | 1 |
@@ -22,15 +22,18 @@
 | Code point | Glyph name | JavaScript escape | Contents |
 |------------|------------|-------------------|----------|
 | U+F8DF | `uniF8DF` | `\uF8DF` | Existing custom glyph |
-| U+F8E0 | `walkPrefix` | `\uF8E0` | Strokes 1 and 2 of 辶 (dot + middle stroke) |
+| U+F8E0 | `walkSecondStroke` | `\uF8E0` | Contextual second stroke of 辶 only |
 
 U+F8E0 is a Private Use Area character. It must be displayed with this font;
 another font may show tofu or an unrelated glyph.
 
-The walk-prefix outline uses paths 1 and 2 from the Simplified Chinese
+U+31CB (㇋, CJK STROKE HZZP) is the semantic Unicode stroke category, but its
+standalone glyph is not used because it is normalized differently. U+F8E0 uses
+path 2 directly from the Simplified Chinese
 [AnimCJK U+8FB6 source](https://github.com/parsimonhi/animCJK/blob/master/svgsZhHans/36790.svg),
-which is derived from the Arphic PL KaitiM fonts. The retained source SVG and
-exact TrueType contour data are in `data/`.
+which is derived from the Arphic PL KaitiM fonts. This preserves the contextual
+shape and placement required to overlap with that 辶 outline. The retained
+source SVG, TrueType contour data, and overlap verification are in `data/`.
 
 To rebuild and verify the font:
 

@@ -12,23 +12,23 @@ type ExtendedGlyph = TTF.Glyph & {
 
 const ROOT = import.meta.dir;
 const FONT_PATH = join(ROOT, "BabelStoneHanPUACustom.ttf");
-const GLYPH_DATA_PATH = join(ROOT, "data", "walk_prefix_glyph.json");
+const GLYPH_DATA_PATH = join(ROOT, "data", "walk_second_stroke_glyph.json");
 const SOURCE_SVG_PATH = join(
   ROOT,
   "data",
-  "walk_radical_dot_plus_hzzp_exact.svg",
+  "walk_radical_second_stroke_exact.svg",
 );
 const TEMP_FONT_PATH = `${FONT_PATH}.tmp`;
 
 const CODE_POINT = 0xf8e0;
 const PREVIOUS_CUSTOM_CODE_POINT = 0xf8df;
-const GLYPH_NAME = "walkPrefix";
+const GLYPH_NAME = "walkSecondStroke";
 const EXPECTED_GLYPH_COUNT = 6123;
-const EXPECTED_SOURCE_PATH_IDS = ["walkPrefix-dot", "walkPrefix-hzzp"];
+const EXPECTED_SOURCE_PATH_IDS = ["walkSecondStroke-hzzp"];
 const MODIFICATION_NOTICE =
   "BabelStone Han PUA Custom contains the BabelStone Han PUA repertoire " +
   "plus custom glyphs U+F8DF and U+F8E0. Modified 2026-08-25: added " +
-  "U+F8E0 walkPrefix from strokes 1 and 2 of U+8FB6 using " +
+  "U+F8E0 walkSecondStroke from stroke 2 of U+8FB6 using " +
   "AnimCJK/Arphic PL KaitiM-derived contours.";
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -109,13 +109,16 @@ function validateGlyphData(value: unknown): asserts value is TTF.Glyph {
   assert(glyph.leftSideBearing === 82, "Expected an 82-unit left side bearing");
   assert(
     [glyph.xMin, glyph.yMin, glyph.xMax, glyph.yMax].join(",") ===
-      "82,321,350,915",
-    "Unexpected walkPrefix bounding box",
+      "82,321,348,698",
+    "Unexpected walkSecondStroke bounding box",
   );
-  assert(glyph.contours?.length === 2, "walkPrefix must contain two contours");
   assert(
-    glyph.contours[0].length === 19 && glyph.contours[1].length === 41,
-    "walkPrefix must contain exactly 60 TrueType points",
+    glyph.contours?.length === 1,
+    "walkSecondStroke must contain one contour",
+  );
+  assert(
+    glyph.contours[0].length === 41,
+    "walkSecondStroke must contain exactly 41 TrueType points",
   );
   for (const contour of glyph.contours) {
     assert(contourArea(contour) < 0, "TrueType contours must be clockwise");
@@ -154,20 +157,23 @@ function verifyBuiltFont(
   const builtFont = readFont(output);
   const built = builtFont.get();
   const previousIndex = built.cmap[PREVIOUS_CUSTOM_CODE_POINT];
-  const walkPrefixIndex = built.cmap[CODE_POINT];
+  const walkSecondStrokeIndex = built.cmap[CODE_POINT];
 
   assert(previousIndex !== undefined, "U+F8DF is missing after the build");
-  assert(walkPrefixIndex !== undefined, "U+F8E0 is missing after the build");
   assert(
-    walkPrefixIndex === previousIndex + 1,
-    "walkPrefix is not immediately after the existing custom glyph",
+    walkSecondStrokeIndex !== undefined,
+    "U+F8E0 is missing after the build",
+  );
+  assert(
+    walkSecondStrokeIndex === previousIndex + 1,
+    "walkSecondStroke is not immediately after the existing custom glyph",
   );
   assert(
     built.glyf.length === EXPECTED_GLYPH_COUNT,
     `Expected ${EXPECTED_GLYPH_COUNT} glyphs, found ${built.glyf.length}`,
   );
 
-  validateGlyphData(built.glyf[walkPrefixIndex]);
+  validateGlyphData(built.glyf[walkSecondStrokeIndex]);
   assert(
     built.name.description === MODIFICATION_NOTICE,
     "The required modification notice is missing from the font",
@@ -224,20 +230,20 @@ async function main() {
   );
 
   const newGlyph = structuredClone(glyphData);
-  let walkPrefixIndex: number;
+  let walkSecondStrokeIndex: number;
   if (existingIndex === undefined) {
     assert(
       previousIndex === ttf.glyf.length - 1,
-      "U+F8DF must be the final base glyph before appending walkPrefix",
+      "U+F8DF must be the final base glyph before appending walkSecondStroke",
     );
-    walkPrefixIndex = ttf.glyf.length;
+    walkSecondStrokeIndex = ttf.glyf.length;
     ttf.glyf.push(newGlyph);
   } else {
-    walkPrefixIndex = existingIndex;
-    ttf.glyf[walkPrefixIndex] = newGlyph;
+    walkSecondStrokeIndex = existingIndex;
+    ttf.glyf[walkSecondStrokeIndex] = newGlyph;
   }
 
-  ttf.cmap[CODE_POINT] = walkPrefixIndex;
+  ttf.cmap[CODE_POINT] = walkSecondStrokeIndex;
   ttf.maxp.numGlyphs = ttf.glyf.length;
   ttf["OS/2"].usLastCharIndex = CODE_POINT;
   ttf.name.description = MODIFICATION_NOTICE;
@@ -258,7 +264,7 @@ async function main() {
     .digest("hex");
   console.log(
     `Built and verified U+F8E0 ${GLYPH_NAME}: ` +
-      `2 contours, 60 points, sha256 ${digest}`,
+      `1 contour, 41 points, sha256 ${digest}`,
   );
 }
 
