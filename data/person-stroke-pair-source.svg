@@ -1,0 +1,21 @@
+<!--
+BabelStone Han copyright 2009-2022 Andrew West.
+
+This synthetic two-stroke component combines the standalone BabelStone Han
+outlines for U+31D2 (㇒) and U+4E36 (丶). Both source contours retain their
+original scale and shape:
+  - ㇒ is translated by (-31,+181);
+  - 丶 is translated by (+168,-67), placing its tip over the middle of ㇒.
+
+The resulting pair is centered in the 1024×1024 em square and mapped to
+project-local U+F8E3 as personStrokePair. No contour is extracted from 以, 亥,
+or another complete character. It is redistributed under the Arphic Public
+License:
+https://ftp.gnu.org/non-gnu/chinese-fonts-truetype/LICENSE
+-->
+<svg id="personStrokePair" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(0 1024) scale(1 -1)">
+    <path id="personStrokePair-pie" d="M684 868 Q694 872 751 830 Q770 816 769 812 Q767 807 754 806 Q731 780 694 694 Q672 646 629 585 Q517 415 215 231 Q202 220 195 229 Q189 239 199 249 Q396 379 529 543 Q646 685 677 853 Q681 867 684 868 Z"/>
+    <path id="personStrokePair-dot" d="M534 548 Q540 555 550 545 Q792 370 824 267 Q836 231 822 194 Q812 172 804 162 Q796 153 788 154 Q782 157 778 170 Q744 317 534 533 Q526 541 534 548 Z"/>
+  </g>
+</svg>

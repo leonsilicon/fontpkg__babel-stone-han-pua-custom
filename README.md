@@ -25,10 +25,9 @@
 | U+F8E0 | `` | `walkSecondStroke` | `\uF8E0` | Contextual second stroke of 辶 only |
 | U+F8E1 | `` | `shanOverOne` | `\uF8E1` | Detached `⿱山一` component |
 | U+F8E2 | `` | `coverOverTowel` | `\uF8E2` | `⿱冖巾` component from 帚 |
-| U+F8E3 | `` | `personRight` | `\uF8E3` | Positional 人 component from the right of 以 |
-| U+F8E4 | `` | `personBottom` | `\uF8E4` | Positional 人 component from the bottom of 亥 |
+| U+F8E3 | `` | `personStrokePair` | `\uF8E3` | Synthetic `㇒` + `丶` component |
 
-U+F8E0 through U+F8E4 are Private Use Area characters. They must be displayed
+U+F8E0 through U+F8E3 are Private Use Area characters. They must be displayed
 with this font; another font may show tofu or unrelated glyphs.
 
 U+31CB (㇋, CJK STROKE HZZP) is the semantic Unicode stroke category, but its
@@ -68,17 +67,16 @@ ids = "⿱冖巾"
 character = "\uF8E2"
 ```
 
-U+F8E3 and U+F8E4 are exact positional forms of 人. U+F8E3 retains the second
-TrueType contour of BabelStone Han's 以 (U+4EE5), where 人 is tall and narrow
-on the right. U+F8E4 retains the first contour of 亥 (U+4EA5), where 人 is
-compressed and wide on the bottom. Both have the final stroke branching from
-the middle of the first stroke, but their proportions and branch points differ,
-so separate PUA characters preserve both source outlines exactly.
+U+F8E3 is constructed from BabelStone Han's standalone `㇒` (U+31D2) and `丶`
+(U+4E36) glyphs. Both contours retain their original scale and shape. `㇒` is
+translated by `(-31,+181)`; `丶` is translated by `(+168,-67)` so its starting
+tip overlaps the middle of `㇒`. The composite is centered in the `1024×1024`
+em square. No contour is extracted from 以, 亥, or another complete character.
+The source SVG and exact two-contour TrueType data are in `data/`.
 
 ```toml
 component = "人"
-right_variant = "\uF8E3"
-bottom_variant = "\uF8E4"
+stroke_pair_variant = "\uF8E3"
 ```
 
 To rebuild and verify the font:

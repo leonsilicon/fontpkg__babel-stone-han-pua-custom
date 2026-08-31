@@ -42,25 +42,15 @@ const COVER_OVER_TOWEL_SOURCE_SVG_PATH = join(
   "data",
   "cover-over-towel-source.svg",
 );
-const PERSON_RIGHT_GLYPH_DATA_PATH = join(
+const PERSON_STROKE_PAIR_GLYPH_DATA_PATH = join(
   ROOT,
   "data",
-  "person-right-glyph.json",
+  "person-stroke-pair-glyph.json",
 );
-const PERSON_RIGHT_SOURCE_SVG_PATH = join(
+const PERSON_STROKE_PAIR_SOURCE_SVG_PATH = join(
   ROOT,
   "data",
-  "person-right-source.svg",
-);
-const PERSON_BOTTOM_GLYPH_DATA_PATH = join(
-  ROOT,
-  "data",
-  "person-bottom-glyph.json",
-);
-const PERSON_BOTTOM_SOURCE_SVG_PATH = join(
-  ROOT,
-  "data",
-  "person-bottom-source.svg",
+  "person-stroke-pair-source.svg",
 );
 const TEMP_FONT_PATH = `${FONT_PATH}.tmp`;
 
@@ -68,14 +58,13 @@ const EXISTING_CUSTOM_CODE_POINT = 0xf8df;
 const WALK_SECOND_STROKE_CODE_POINT = 0xf8e0;
 const SHAN_OVER_ONE_CODE_POINT = 0xf8e1;
 const COVER_OVER_TOWEL_CODE_POINT = 0xf8e2;
-const PERSON_RIGHT_CODE_POINT = 0xf8e3;
-const PERSON_BOTTOM_CODE_POINT = 0xf8e4;
+const PERSON_STROKE_PAIR_CODE_POINT = 0xf8e3;
+const LEGACY_U_F8E4_CODE_POINT = 0xf8e4;
 const WALK_SECOND_STROKE_GLYPH_NAME = "walkSecondStroke";
 const SHAN_OVER_ONE_GLYPH_NAME = "shanOverOne";
 const COVER_OVER_TOWEL_GLYPH_NAME = "coverOverTowel";
-const PERSON_RIGHT_GLYPH_NAME = "personRight";
-const PERSON_BOTTOM_GLYPH_NAME = "personBottom";
-const EXPECTED_GLYPH_COUNT = 6127;
+const PERSON_STROKE_PAIR_GLYPH_NAME = "personStrokePair";
+const EXPECTED_GLYPH_COUNT = 6126;
 const EXPECTED_WALK_SECOND_STROKE_SOURCE_PATH_IDS = [
   "walkSecondStroke-hzzp",
 ];
@@ -86,18 +75,20 @@ const EXPECTED_SHAN_OVER_ONE_SOURCE_PATH_IDS = [
 const EXPECTED_COVER_OVER_TOWEL_SOURCE_PATH_IDS = [
   "coverOverTowel-component",
 ];
-const EXPECTED_PERSON_RIGHT_SOURCE_PATH_IDS = ["personRight-component"];
-const EXPECTED_PERSON_BOTTOM_SOURCE_PATH_IDS = ["personBottom-component"];
+const EXPECTED_PERSON_STROKE_PAIR_SOURCE_PATH_IDS = [
+  "personStrokePair-pie",
+  "personStrokePair-dot",
+];
 const MODIFICATION_NOTICE =
   "BabelStone Han PUA Custom contains the BabelStone Han PUA repertoire " +
-  "plus custom glyphs U+F8DF through U+F8E4. Modified 2026-08-25: added " +
+  "plus custom glyphs U+F8DF through U+F8E3. Modified 2026-08-25: added " +
   "U+F8E0 walkSecondStroke from stroke 2 of U+8FB6 using AnimCJK/Arphic " +
   "PL KaitiM-derived contours. Modified 2026-08-30: added U+F8E1 " +
   "shanOverOne (IDS ⿱山一) from the first two contours of BabelStone Han " +
   "U+4E97. Modified 2026-08-31: added U+F8E2 coverOverTowel (IDS ⿱冖巾) " +
-  "from the first contour of BabelStone Han U+5E1A; U+F8E3 personRight " +
-  "from the second contour of U+4EE5; and U+F8E4 personBottom from the " +
-  "first contour of U+4EA5.";
+  "from the first contour of BabelStone Han U+5E1A; and U+F8E3 " +
+  "personStrokePair, composed at original scale from standalone BabelStone " +
+  "Han U+31D2 and U+4E36 contours and centered in the em square.";
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) {
@@ -163,6 +154,152 @@ function contourArea(contour: TTF.Contour) {
       return area + point.x * next.y - next.x * point.y;
     }, 0) / 2
   );
+}
+
+function contourBounds(contour: TTF.Contour) {
+  return [
+    Math.min(...contour.map((point) => point.x)),
+    Math.min(...contour.map((point) => point.y)),
+    Math.max(...contour.map((point) => point.x)),
+    Math.max(...contour.map((point) => point.y)),
+  ];
+}
+
+type FlattenedPoint = {
+  x: number;
+  y: number;
+};
+
+function pointDistance(left: FlattenedPoint, right: FlattenedPoint) {
+  return Math.hypot(left.x - right.x, left.y - right.y);
+}
+
+function flattenContour(contour: TTF.Contour, maxStep = 2) {
+  const expanded: Array<FlattenedPoint & { onCurve: boolean }> = [];
+  for (let index = 0; index < contour.length; index += 1) {
+    const point = contour[index];
+    const next = contour[(index + 1) % contour.length];
+    expanded.push({
+      x: point.x,
+      y: point.y,
+      onCurve: Boolean(point.onCurve),
+    });
+    if (!point.onCurve && !next.onCurve) {
+      expanded.push({
+        x: (point.x + next.x) / 2,
+        y: (point.y + next.y) / 2,
+        onCurve: true,
+      });
+    }
+  }
+
+  const startIndex = expanded.findIndex((point) => point.onCurve);
+  assert(startIndex >= 0, "Contour must contain an on-curve point");
+  const points = [
+    ...expanded.slice(startIndex),
+    ...expanded.slice(0, startIndex),
+  ];
+  const start = points[0];
+  const flattened: FlattenedPoint[] = [{ x: start.x, y: start.y }];
+  let current: FlattenedPoint = start;
+  let index = 1;
+
+  while (index <= points.length) {
+    const point = points[index % points.length];
+    if (point.onCurve) {
+      const steps = Math.max(
+        1,
+        Math.ceil(pointDistance(current, point) / maxStep),
+      );
+      for (let step = 1; step <= steps; step += 1) {
+        const progress = step / steps;
+        flattened.push({
+          x: current.x + (point.x - current.x) * progress,
+          y: current.y + (point.y - current.y) * progress,
+        });
+      }
+      current = point;
+      index += 1;
+      continue;
+    }
+
+    const end = points[(index + 1) % points.length];
+    assert(end.onCurve, "Expanded contour controls must end on-curve");
+    const approximateLength =
+      pointDistance(current, point) + pointDistance(point, end);
+    const steps = Math.max(2, Math.ceil(approximateLength / maxStep));
+    for (let step = 1; step <= steps; step += 1) {
+      const progress = step / steps;
+      const remaining = 1 - progress;
+      flattened.push({
+        x:
+          remaining * remaining * current.x +
+          2 * remaining * progress * point.x +
+          progress * progress * end.x,
+        y:
+          remaining * remaining * current.y +
+          2 * remaining * progress * point.y +
+          progress * progress * end.y,
+      });
+    }
+    current = end;
+    index += 2;
+  }
+
+  if (pointDistance(flattened[0], flattened.at(-1)!) < 0.001) {
+    flattened.pop();
+  }
+  return flattened;
+}
+
+function direction(
+  start: FlattenedPoint,
+  end: FlattenedPoint,
+  point: FlattenedPoint,
+) {
+  return (
+    (end.x - start.x) * (point.y - start.y) -
+    (end.y - start.y) * (point.x - start.x)
+  );
+}
+
+function segmentsStrictlyIntersect(
+  leftStart: FlattenedPoint,
+  leftEnd: FlattenedPoint,
+  rightStart: FlattenedPoint,
+  rightEnd: FlattenedPoint,
+) {
+  const epsilon = 1e-7;
+  const leftRightStart = direction(leftStart, leftEnd, rightStart);
+  const leftRightEnd = direction(leftStart, leftEnd, rightEnd);
+  const rightLeftStart = direction(rightStart, rightEnd, leftStart);
+  const rightLeftEnd = direction(rightStart, rightEnd, leftEnd);
+  return (
+    leftRightStart * leftRightEnd < -epsilon &&
+    rightLeftStart * rightLeftEnd < -epsilon
+  );
+}
+
+function assertContourDoesNotSelfIntersect(contour: TTF.Contour) {
+  const points = flattenContour(contour);
+  for (let left = 0; left < points.length; left += 1) {
+    const leftNext = (left + 1) % points.length;
+    for (let right = left + 1; right < points.length; right += 1) {
+      const rightNext = (right + 1) % points.length;
+      if (leftNext === right || rightNext === left) {
+        continue;
+      }
+      assert(
+        !segmentsStrictlyIntersect(
+          points[left],
+          points[leftNext],
+          points[right],
+          points[rightNext],
+        ),
+        `Contour intersects itself at flattened segments ${left} and ${right}`,
+      );
+    }
+  }
 }
 
 function validateWalkSecondStrokeGlyphData(
@@ -271,67 +408,55 @@ function validateCoverOverTowelGlyphData(
   );
 }
 
-function validatePersonRightGlyphData(
+function validatePersonStrokePairGlyphData(
   value: unknown,
 ): asserts value is TTF.Glyph {
   assert(typeof value === "object" && value !== null, "Invalid glyph data");
   const glyph = value as TTF.Glyph;
   assert(
-    glyph.name === PERSON_RIGHT_GLYPH_NAME,
-    `Expected glyph name ${PERSON_RIGHT_GLYPH_NAME}`,
+    glyph.name === PERSON_STROKE_PAIR_GLYPH_NAME,
+    `Expected glyph name ${PERSON_STROKE_PAIR_GLYPH_NAME}`,
   );
   assert(
     glyph.unicode?.length === 1 &&
-      glyph.unicode[0] === PERSON_RIGHT_CODE_POINT,
+      glyph.unicode[0] === PERSON_STROKE_PAIR_CODE_POINT,
     "The glyph data must map only U+F8E3",
   );
   assert(glyph.advanceWidth === 1024, "Expected a 1024-unit advance width");
-  assert(glyph.leftSideBearing === 207, "Expected a 207-unit left side bearing");
+  assert(glyph.leftSideBearing === 189, "Expected a 189-unit left side bearing");
   assert(
     [glyph.xMin, glyph.yMin, glyph.xMax, glyph.yMax].join(",") ===
-      "207,-70,921,818",
-    "Unexpected personRight bounding box",
-  );
-  assert(glyph.contours?.length === 1, "personRight must contain one contour");
-  assert(
-    glyph.contours[0].length === 40,
-    "personRight must contain exactly 40 TrueType points",
+      "189,153,836,872",
+    "Unexpected personStrokePair bounding box",
   );
   assert(
-    contourArea(glyph.contours[0]) < 0,
-    "TrueType contours must be clockwise",
-  );
-}
-
-function validatePersonBottomGlyphData(
-  value: unknown,
-): asserts value is TTF.Glyph {
-  assert(typeof value === "object" && value !== null, "Invalid glyph data");
-  const glyph = value as TTF.Glyph;
-  assert(
-    glyph.name === PERSON_BOTTOM_GLYPH_NAME,
-    `Expected glyph name ${PERSON_BOTTOM_GLYPH_NAME}`,
+    glyph.contours?.length === 2,
+    "personStrokePair must contain two contours",
   );
   assert(
-    glyph.unicode?.length === 1 &&
-      glyph.unicode[0] === PERSON_BOTTOM_CODE_POINT,
-    "The glyph data must map only U+F8E4",
-  );
-  assert(glyph.advanceWidth === 1024, "Expected a 1024-unit advance width");
-  assert(glyph.leftSideBearing === 90, "Expected a 90-unit left side bearing");
-  assert(
-    [glyph.xMin, glyph.yMin, glyph.xMax, glyph.yMax].join(",") ===
-      "90,-90,914,432",
-    "Unexpected personBottom bounding box",
-  );
-  assert(glyph.contours?.length === 1, "personBottom must contain one contour");
-  assert(
-    glyph.contours[0].length === 42,
-    "personBottom must contain exactly 42 TrueType points",
+    glyph.contours[0].length === 22 && glyph.contours[1].length === 16,
+    "personStrokePair must contain the exact ㇒ and 丶 contour point counts",
   );
   assert(
-    contourArea(glyph.contours[0]) < 0,
-    "TrueType contours must be clockwise",
+    contourBounds(glyph.contours[0]).join(",") === "189,220,770,872",
+    "Unexpected translated ㇒ contour bounds",
+  );
+  assert(
+    contourBounds(glyph.contours[1]).join(",") === "526,153,836,555",
+    "Unexpected translated 丶 contour bounds",
+  );
+  for (const contour of glyph.contours) {
+    assert(
+      contourArea(contour) < 0,
+      "TrueType contours must be clockwise",
+    );
+    assertContourDoesNotSelfIntersect(contour);
+  }
+  assert(
+    glyph.contours[0].some(
+      (point) => point.x >= 526 && point.x <= 550 && point.y >= 533 && point.y <= 555,
+    ),
+    "The ㇒ and 丶 contours must overlap at the branch",
   );
 }
 
@@ -370,8 +495,7 @@ function verifyBuiltFont(
   const walkSecondStrokeIndex = built.cmap[WALK_SECOND_STROKE_CODE_POINT];
   const shanOverOneIndex = built.cmap[SHAN_OVER_ONE_CODE_POINT];
   const coverOverTowelIndex = built.cmap[COVER_OVER_TOWEL_CODE_POINT];
-  const personRightIndex = built.cmap[PERSON_RIGHT_CODE_POINT];
-  const personBottomIndex = built.cmap[PERSON_BOTTOM_CODE_POINT];
+  const personStrokePairIndex = built.cmap[PERSON_STROKE_PAIR_CODE_POINT];
 
   assert(existingCustomIndex !== undefined, "U+F8DF is missing after the build");
   assert(
@@ -383,8 +507,14 @@ function verifyBuiltFont(
     coverOverTowelIndex !== undefined,
     "U+F8E2 is missing after the build",
   );
-  assert(personRightIndex !== undefined, "U+F8E3 is missing after the build");
-  assert(personBottomIndex !== undefined, "U+F8E4 is missing after the build");
+  assert(
+    personStrokePairIndex !== undefined,
+    "U+F8E3 is missing after the build",
+  );
+  assert(
+    built.cmap[LEGACY_U_F8E4_CODE_POINT] === undefined,
+    "Obsolete U+F8E4 is still mapped after the build",
+  );
   assert(
     walkSecondStrokeIndex === existingCustomIndex + 1,
     "walkSecondStroke is not immediately after the existing custom glyph",
@@ -398,12 +528,8 @@ function verifyBuiltFont(
     "coverOverTowel is not immediately after shanOverOne",
   );
   assert(
-    personRightIndex === coverOverTowelIndex + 1,
-    "personRight is not immediately after coverOverTowel",
-  );
-  assert(
-    personBottomIndex === personRightIndex + 1,
-    "personBottom is not immediately after personRight",
+    personStrokePairIndex === coverOverTowelIndex + 1,
+    "personStrokePair is not immediately after coverOverTowel",
   );
   assert(
     built.glyf.length === EXPECTED_GLYPH_COUNT,
@@ -413,8 +539,7 @@ function verifyBuiltFont(
   validateWalkSecondStrokeGlyphData(built.glyf[walkSecondStrokeIndex]);
   validateShanOverOneGlyphData(built.glyf[shanOverOneIndex]);
   validateCoverOverTowelGlyphData(built.glyf[coverOverTowelIndex]);
-  validatePersonRightGlyphData(built.glyf[personRightIndex]);
-  validatePersonBottomGlyphData(built.glyf[personBottomIndex]);
+  validatePersonStrokePairGlyphData(built.glyf[personStrokePairIndex]);
   assert(
     built.name.description === MODIFICATION_NOTICE,
     "The required modification notice is missing from the font",
@@ -424,8 +549,8 @@ function verifyBuiltFont(
     "The Arphic Public License is missing from the font",
   );
   assert(
-    built["OS/2"].usLastCharIndex === PERSON_BOTTOM_CODE_POINT,
-    "OS/2 does not end at U+F8E4",
+    built["OS/2"].usLastCharIndex === PERSON_STROKE_PAIR_CODE_POINT,
+    "OS/2 does not end at U+F8E3",
   );
 
   for (let index = 0; index < beforeFingerprints.length; index += 1) {
@@ -454,10 +579,8 @@ async function main() {
     shanOverOneSourceSvg,
     coverOverTowelGlyphData,
     coverOverTowelSourceSvg,
-    personRightGlyphData,
-    personRightSourceSvg,
-    personBottomGlyphData,
-    personBottomSourceSvg,
+    personStrokePairGlyphData,
+    personStrokePairSourceSvg,
     fontStats,
   ] = await Promise.all([
     Bun.file(FONT_PATH).arrayBuffer(),
@@ -467,10 +590,8 @@ async function main() {
     Bun.file(SHAN_OVER_ONE_SOURCE_SVG_PATH).text(),
     Bun.file(COVER_OVER_TOWEL_GLYPH_DATA_PATH).json(),
     Bun.file(COVER_OVER_TOWEL_SOURCE_SVG_PATH).text(),
-    Bun.file(PERSON_RIGHT_GLYPH_DATA_PATH).json(),
-    Bun.file(PERSON_RIGHT_SOURCE_SVG_PATH).text(),
-    Bun.file(PERSON_BOTTOM_GLYPH_DATA_PATH).json(),
-    Bun.file(PERSON_BOTTOM_SOURCE_SVG_PATH).text(),
+    Bun.file(PERSON_STROKE_PAIR_GLYPH_DATA_PATH).json(),
+    Bun.file(PERSON_STROKE_PAIR_SOURCE_SVG_PATH).text(),
     stat(FONT_PATH),
   ]);
 
@@ -489,15 +610,10 @@ async function main() {
     coverOverTowelSourceSvg,
     EXPECTED_COVER_OVER_TOWEL_SOURCE_PATH_IDS,
   );
-  validatePersonRightGlyphData(personRightGlyphData);
+  validatePersonStrokePairGlyphData(personStrokePairGlyphData);
   validateSourceSvg(
-    personRightSourceSvg,
-    EXPECTED_PERSON_RIGHT_SOURCE_PATH_IDS,
-  );
-  validatePersonBottomGlyphData(personBottomGlyphData);
-  validateSourceSvg(
-    personBottomSourceSvg,
-    EXPECTED_PERSON_BOTTOM_SOURCE_PATH_IDS,
+    personStrokePairSourceSvg,
+    EXPECTED_PERSON_STROKE_PAIR_SOURCE_PATH_IDS,
   );
 
   const font = readFont(fontBuffer);
@@ -510,8 +626,8 @@ async function main() {
     ttf.cmap[WALK_SECOND_STROKE_CODE_POINT];
   const existingShanOverOneIndex = ttf.cmap[SHAN_OVER_ONE_CODE_POINT];
   const existingCoverOverTowelIndex = ttf.cmap[COVER_OVER_TOWEL_CODE_POINT];
-  const existingPersonRightIndex = ttf.cmap[PERSON_RIGHT_CODE_POINT];
-  const existingPersonBottomIndex = ttf.cmap[PERSON_BOTTOM_CODE_POINT];
+  const existingPersonStrokePairIndex = ttf.cmap[PERSON_STROKE_PAIR_CODE_POINT];
+  const legacyUF8E4Index = ttf.cmap[LEGACY_U_F8E4_CODE_POINT];
 
   assert(
     existingCustomIndex !== undefined,
@@ -525,6 +641,15 @@ async function main() {
 
   let walkSecondStrokeIndex: number;
   const replacedGlyphIndices = new Set<number>();
+  if (legacyUF8E4Index !== undefined) {
+    assert(
+      legacyUF8E4Index === ttf.glyf.length - 1,
+      "Legacy U+F8E4 must be the final glyph before removal",
+    );
+    replacedGlyphIndices.add(legacyUF8E4Index);
+    ttf.glyf.pop();
+    delete ttf.cmap[LEGACY_U_F8E4_CODE_POINT];
+  }
   if (existingWalkSecondStrokeIndex === undefined) {
     assert(
       existingCustomIndex === ttf.glyf.length - 1,
@@ -586,48 +711,29 @@ async function main() {
   ttf.cmap[COVER_OVER_TOWEL_CODE_POINT] = coverOverTowelIndex;
 
   assert(
-    existingPersonRightIndex === undefined ||
-      existingPersonRightIndex === coverOverTowelIndex + 1,
+    existingPersonStrokePairIndex === undefined ||
+      existingPersonStrokePairIndex === coverOverTowelIndex + 1,
     "U+F8E3 is occupied outside the expected glyph slot",
   );
-  let personRightIndex: number;
-  if (existingPersonRightIndex === undefined) {
+  let personStrokePairIndex: number;
+  if (existingPersonStrokePairIndex === undefined) {
     assert(
       coverOverTowelIndex === ttf.glyf.length - 1,
-      "U+F8E2 must be the final glyph before appending personRight",
+      "U+F8E2 must be the final glyph before appending personStrokePair",
     );
-    personRightIndex = ttf.glyf.length;
-    ttf.glyf.push(structuredClone(personRightGlyphData));
+    personStrokePairIndex = ttf.glyf.length;
+    ttf.glyf.push(structuredClone(personStrokePairGlyphData));
   } else {
-    personRightIndex = existingPersonRightIndex;
-    replacedGlyphIndices.add(personRightIndex);
-    ttf.glyf[personRightIndex] = structuredClone(personRightGlyphData);
+    personStrokePairIndex = existingPersonStrokePairIndex;
+    replacedGlyphIndices.add(personStrokePairIndex);
+    ttf.glyf[personStrokePairIndex] = structuredClone(
+      personStrokePairGlyphData,
+    );
   }
 
-  ttf.cmap[PERSON_RIGHT_CODE_POINT] = personRightIndex;
-
-  assert(
-    existingPersonBottomIndex === undefined ||
-      existingPersonBottomIndex === personRightIndex + 1,
-    "U+F8E4 is occupied outside the expected glyph slot",
-  );
-  let personBottomIndex: number;
-  if (existingPersonBottomIndex === undefined) {
-    assert(
-      personRightIndex === ttf.glyf.length - 1,
-      "U+F8E3 must be the final glyph before appending personBottom",
-    );
-    personBottomIndex = ttf.glyf.length;
-    ttf.glyf.push(structuredClone(personBottomGlyphData));
-  } else {
-    personBottomIndex = existingPersonBottomIndex;
-    replacedGlyphIndices.add(personBottomIndex);
-    ttf.glyf[personBottomIndex] = structuredClone(personBottomGlyphData);
-  }
-
-  ttf.cmap[PERSON_BOTTOM_CODE_POINT] = personBottomIndex;
+  ttf.cmap[PERSON_STROKE_PAIR_CODE_POINT] = personStrokePairIndex;
   ttf.maxp.numGlyphs = ttf.glyf.length;
-  ttf["OS/2"].usLastCharIndex = PERSON_BOTTOM_CODE_POINT;
+  ttf["OS/2"].usLastCharIndex = PERSON_STROKE_PAIR_CODE_POINT;
   ttf.name.description = MODIFICATION_NOTICE;
 
   const output = writeFont(font);
@@ -648,8 +754,7 @@ async function main() {
     `Built and verified U+F8E0 ${WALK_SECOND_STROKE_GLYPH_NAME} and ` +
       `U+F8E1 ${SHAN_OVER_ONE_GLYPH_NAME} and ` +
       `U+F8E2 ${COVER_OVER_TOWEL_GLYPH_NAME} and ` +
-      `U+F8E3 ${PERSON_RIGHT_GLYPH_NAME} and ` +
-      `U+F8E4 ${PERSON_BOTTOM_GLYPH_NAME}: sha256 ${digest}`,
+      `U+F8E3 ${PERSON_STROKE_PAIR_GLYPH_NAME}: sha256 ${digest}`,
   );
 }
 
