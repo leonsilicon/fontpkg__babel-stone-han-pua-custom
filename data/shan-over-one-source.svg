@@ -1,0 +1,15 @@
+<!--
+BabelStone Han copyright 2009-2022 Andrew West.
+
+This file contains contours 1 and 2 from the BabelStone Han outline for
+U+4E97 (亗). The third contour, the extra bottom horizontal, is intentionally
+omitted to form the detached IDS component ⿱山一. It is redistributed under
+the Arphic Public License:
+https://ftp.gnu.org/non-gnu/chinese-fonts-truetype/LICENSE
+-->
+<svg id="shanOverOne" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(0 1024) scale(1 -1)">
+    <path id="shanOverOne-shan" d="M231 476 q-21 -16 -28 -34 q-3 -8 -10 -4 q-25 23 -41 30 q-10 5 -1 14 q11 12 15 19 q4 8 5 27 l0 142 q-1 51 -5 82 q-1 17 9 13 q56 -20 74 -30 q13 -9 6 -13 q-30 -19 -33 -22 q-3 -5 -3 -30 l0 -163 l272 0 l0 275 q-1 39 -4 70 q-1 16 9 13 q54 -17 76 -29 q9 -5 0 -11 q-22 -16 -26 -20 q-7 -7 -7 -23 l0 -275 l272 0 l0 184 q-1 30 -4 55 q-3 15 0 18 q4 4 13 0 q39 -17 63 -30 q6 -3 6 -6 q-1 -5 -4 -6 q-18 -9 -22 -15 q-4 -6 -4 -16 l0 -186 q1 -18 2 -45 q1 -9 -6 -13 q-44 -21 -48 -20 q-3 3 0 13 q1 15 2 36 l-578 0 Z"/>
+    <path id="shanOverOne-one" d="M731 283 q14 1 30 19 l26 37 q7 9 16 0 q71 -63 70 -78 q-2 -8 -15 -9 l-592 0 q-42 -1 -73 -7 q-9 -3 -10 6 q-5 18 -20 31 q-8 7 -4 11 q4 3 11 -1 q38 -9 84 -9 l477 0 Z"/>
+  </g>
+</svg>

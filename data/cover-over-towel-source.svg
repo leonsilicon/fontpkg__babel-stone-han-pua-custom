@@ -1,0 +1,11 @@
+<!--
+BabelStone Han copyright 2009-2022 Andrew West.
+
+This file contains contour 1 from the BabelStone Han outline for U+5E1A
+(帚). The upper contour is intentionally omitted to retain only the lower
+IDS component ⿱冖巾. It is redistributed under the Arphic Public License:
+https://ftp.gnu.org/non-gnu/chinese-fonts-truetype/LICENSE
+-->
+<svg id="coverOverTowel" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <path id="coverOverTowel-component" transform="translate(0 1024) scale(1 -1)" d="M772 67 q0 -29 -16 -48 q-15 -19 -54 -31 q-12 -5 -13 2 q-6 24 -16 37 q-11 13 -72 23 q-10 2 -9 14 q2 11 14 8 q106 -13 109 -12 q9 6 9 21 l0 235 l-212 0 l0 -169 q0 -118 4 -197 q-1 -9 -46 -39 q-14 -9 -13 12 q7 133 7 224 l0 169 l-204 0 l0 -299 q-1 -8 -5 -9 q-10 -4 -32 -13 q-15 -6 -14 4 q2 26 3 51 l0 274 q-1 26 -2 45 q0 9 4 10 q4 3 13 -6 q13 -13 31 -26 l206 0 l0 117 l-311 0 q-8 -81 -38 -117 q-15 -15 -30 -14 q-14 2 -21 9 q-23 25 8 49 q53 48 59 145 q1 9 8 9 q8 1 9 -9 q3 -22 4 -41 l710 0 q10 0 14 6 l28 30 q3 4 7 4 q11 0 56 -60 q8 -12 -7 -13 q-63 -10 -135 -91 q-9 -12 -16 -6 q-9 7 1 22 q26 41 48 77 l-346 0 l0 -117 l182 0 q8 0 12 4 l26 35 q8 8 15 1 q32 -27 47 -52 q7 -10 0 -11 q-10 -2 -16 -9 q-6 -7 -6 -23 l0 -225 Z"/>
+</svg>

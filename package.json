@@ -1,6 +1,6 @@
 {
   "name": "@leonsilicon/fontpkg__babel-stone-han-pua-custom",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Font package for BabelStone Han PUA Custom",
   "license": "Arphic-1999",
   "keywords": [
@@ -25,5 +25,12 @@
   },
   "devDependencies": {
     "fonteditor-core": "2.6.3"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "bun",
+      "version": "1.4.0",
+      "onFail": "download"
+    }
   }
 }
