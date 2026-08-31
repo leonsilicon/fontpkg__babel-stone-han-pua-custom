@@ -1,0 +1,11 @@
+<!--
+BabelStone Han copyright 2009-2022 Andrew West.
+
+This file contains contour 2 from the BabelStone Han outline for U+4EE5
+(以): the positional 人 component on the right. The other two contours are
+intentionally omitted. It is redistributed under the Arphic Public License:
+https://ftp.gnu.org/non-gnu/chinese-fonts-truetype/LICENSE
+-->
+<svg id="personRight" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <path id="personRight-component" transform="translate(0 1024) scale(1 -1)" d="M720 227 q155 -111 189 -183 q12 -31 5 -55 q-8 -23 -17 -33 q-8 -8 -15 -7 q-7 2 -10 15 q-25 100 -163 244 q-99 -174 -484 -274 q-15 -4 -16 6 q-2 9 10 12 q310 95 415 224 q55 66 80 166 q15 92 15 207 l0 125 q0 79 -4 128 q0 16 10 13 q53 -18 72 -27 q13 -10 -3 -17 q-16 -8 -20 -18 q-7 -18 -7 -79 l0 -125 q-2 -204 -57 -322 Z"/>
+</svg>

@@ -1,0 +1,11 @@
+<!--
+BabelStone Han copyright 2009-2022 Andrew West.
+
+This file contains contour 1 from the BabelStone Han outline for U+4EA5
+(亥): the positional 人 component on the bottom. The upper contour is
+intentionally omitted. It is redistributed under the Arphic Public License:
+https://ftp.gnu.org/non-gnu/chinese-fonts-truetype/LICENSE
+-->
+<svg id="personBottom" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <path id="personBottom-component" transform="translate(0 1024) scale(1 -1)" d="M618 177 q215 -83 276 -159 q20 -27 19 -52 q-3 -24 -7 -36 q-4 -10 -13 -11 q-7 -1 -14 12 q-64 113 -277 230 q-61 -57 -113 -91 q-126 -82 -367 -152 q-25 -8 -28 5 q-4 16 11 20 q183 57 283 114 q100 58 211 170 q111 113 159 194 q4 10 8 10 q4 1 8 -3 q24 -25 55 -59 q7 -8 4 -12 q-4 -4 -16 0 q-12 7 -28 1 q-14 -4 -48 -47 q-65 -76 -123 -134 Z"/>
+</svg>
