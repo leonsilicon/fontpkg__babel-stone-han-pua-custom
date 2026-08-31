@@ -19,12 +19,12 @@
 
 ## Custom glyphs
 
-| Code point | Glyph name | JavaScript escape | Contents |
-|------------|------------|-------------------|----------|
-| U+F8DF | `uniF8DF` | `\uF8DF` | Existing custom glyph |
-| U+F8E0 | `walkSecondStroke` | `\uF8E0` | Contextual second stroke of 辶 only |
-| U+F8E1 | `shanOverOne` | `\uF8E1` | Detached `⿱山一` component |
-| U+F8E2 | `coverOverTowel` | `\uF8E2` | `⿱冖巾` component from 帚 |
+| Code point | Literal | Glyph name | JavaScript escape | Contents |
+|------------|---------|------------|-------------------|----------|
+| U+F8DF | `` | `uniF8DF` | `\uF8DF` | Existing custom glyph |
+| U+F8E0 | `` | `walkSecondStroke` | `\uF8E0` | Contextual second stroke of 辶 only |
+| U+F8E1 | `` | `shanOverOne` | `\uF8E1` | Detached `⿱山一` component |
+| U+F8E2 | `` | `coverOverTowel` | `\uF8E2` | `⿱冖巾` component from 帚 |
 
 U+F8E0 through U+F8E2 are Private Use Area characters. They must be displayed
 with this font; another font may show tofu or unrelated glyphs.
